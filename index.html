@@ -1,722 +1,567 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Green Network - Protect Earth</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    <title>视频展示平台</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0ea5e9',
+                        secondary: '#7c3aed',
+                        dark: '#0f172a',
+                        'dark-light': '#1e293b',
+                        'dark-lighter': '#334155'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
         }
-
-        :root {
-            --primary: #2e7d32;
-            --secondary: #4caf50;
-            --accent: #8bc34a;
-            --light: #e8f5e9;
-            --dark: #1b5e20;
-            --text: #333333;
-            --white: #ffffff;
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-gradient {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+            }
+            .bg-glass {
+                @apply bg-white/10 backdrop-blur-md border border-white/20;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:shadow-primary/20;
+            }
+            .category-active {
+                @apply bg-gradient-to-r from-primary to-secondary text-white;
+            }
         }
-
+        
+        /* Custom styles */
         body {
-            background-color: var(--light);
-            color: var(--text);
-            line-height: 1.6;
+            background-color: #0f172a;
+            background-image: 
+                radial-gradient(at 80% 10%, rgba(14, 165, 233, 0.1) 0px, transparent 50%),
+                radial-gradient(at 20% 90%, rgba(124, 58, 237, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
         }
-
-        header {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: var(--white);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        .logo i {
-            font-size: 2rem;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-
-        nav ul li {
-            margin-left: 2rem;
-        }
-
-        nav ul li a {
-            color: var(--white);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            padding: 0.5rem 0;
-            position: relative;
-        }
-
-        nav ul li a:hover {
-            color: var(--accent);
-        }
-
-        nav ul li a::after {
+        
+        .video-card::before {
             content: '';
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--accent);
-            transition: width 0.3s ease;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 100%);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            border-radius: inherit;
+            z-index: 1;
         }
-
-        nav ul li a:hover::after {
-            width: 100%;
+        
+        .video-card:hover::before {
+            opacity: 0.9;
         }
-
-        .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80');
-            background-size: cover;
-            background-position: center;
-            height: 80vh;
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: var(--white);
-        }
-
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-        }
-
-        .btn {
-            display: inline-block;
-            background-color: var(--accent);
-            color: var(--white);
-            padding: 0.8rem 2rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
+        
+        .video-card .play-button {
+            opacity: 0.8;
+            transform: scale(0.9);
             transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        .btn:hover {
-            background-color: var(--primary);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        
+        .video-card:hover .play-button {
+            opacity: 1;
+            transform: scale(1);
         }
-
-        section {
-            padding: 5rem 0;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .section-title h2 {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
+        
+        .video-duration {
             position: relative;
-            display: inline-block;
+            z-index: 2;
         }
-
-        .section-title h2::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background-color: var(--accent);
-            border-radius: 2px;
-        }
-
-        .section-title p {
-            color: var(--text);
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .about-img {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .about-img img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.5s ease;
-        }
-
-        .about-img:hover img {
-            transform: scale(1.05);
-        }
-
-        .about-text h3 {
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            color: var(--dark);
-        }
-
-        .about-text p {
-            margin-bottom: 1.5rem;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 2rem 1rem;
-            background-color: var(--white);
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-item:hover {
-            transform: translateY(-10px);
-        }
-
-        .stat-item i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .stat-item h3 {
-            font-size: 2.5rem;
-            color: var(--dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-item p {
-            color: var(--text);
-        }
-
-        .initiatives {
-            background-color: var(--white);
-        }
-
-        .initiatives-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-        }
-
-        .initiative-card {
-            background-color: var(--light);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .initiative-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .initiative-img {
-            height: 200px;
-            overflow: hidden;
-        }
-
-        .initiative-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .initiative-card:hover .initiative-img img {
-            transform: scale(1.1);
-        }
-
-        .initiative-content {
-            padding: 1.5rem;
-        }
-
-        .initiative-content h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--dark);
-        }
-
-        .initiative-content p {
-            margin-bottom: 1.5rem;
-        }
-
-        .cta {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: var(--white);
-            text-align: center;
-            padding: 5rem 0;
-        }
-
-        .cta h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .cta p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta .btn {
-            background-color: var(--white);
-            color: var(--primary);
-        }
-
-        .cta .btn:hover {
-            background-color: var(--accent);
-            color: var(--white);
-        }
-
-        footer {
-            background-color: var(--dark);
-            color: var(--white);
-            padding: 3rem 0 1rem;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-column h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
+        
+        .video-info {
             position: relative;
-            padding-bottom: 10px;
-        }
-
-        .footer-column h3::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background-color: var(--accent);
-        }
-
-        .footer-column p {
-            margin-bottom: 1rem;
-        }
-
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.8rem;
-        }
-
-        .footer-links li a {
-            color: var(--light);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .footer-links li a:hover {
-            color: var(--accent);
-            padding-left: 5px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .social-links a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            color: var(--white);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            background-color: var(--accent);
-            transform: translateY(-5px);
-        }
-
-        .copyright {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .mobile-menu {
-            display: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        @media (max-width: 992px) {
-            .about-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .initiatives-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .footer-content {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero p {
-                font-size: 1.1rem;
-            }
-            
-            nav ul {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: var(--primary);
-                flex-direction: column;
-                padding: 1rem 0;
-                text-align: center;
-                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-            }
-            
-            nav ul.active {
-                display: flex;
-            }
-            
-            nav ul li {
-                margin: 0;
-                padding: 0.8rem 0;
-            }
-            
-            .mobile-menu {
-                display: block;
-            }
-            
-            .initiatives-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .footer-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Animation for stats counter */
-        .counter {
-            transition: all 0.5s ease;
+            z-index: 2;
         }
     </style>
 </head>
-<body>
+<body class="font-sans text-gray-100 min-h-screen">
     <!-- Header -->
-    <header>
-        <div class="container nav-container">
-            <div class="logo">
-                <i class="fas fa-seedling"></i>
-                <span>Green Network</span>
+    <header class="fixed top-0 left-0 right-0 z-50 bg-glass">
+        <div class="container mx-auto px-4 py-4 flex flex-wrap items-center justify-between">
+            <div class="flex items-center">
+                <div class="text-2xl font-bold text-gradient">VideoShow</div>
             </div>
-            <nav>
-                <div class="mobile-menu">
-                    <i class="fas fa-bars"></i>
-                </div>
-                <ul>
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#initiatives">Initiatives</a></li>
-                    <li><a href="#get-involved">Get Involved</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
+            
+            <nav class="hidden md:flex space-x-6">
+                <a href="#" class="hover:text-primary transition-colors">首页</a>
+                <a href="#" class="hover:text-primary transition-colors">热门</a>
+                <a href="#" class="hover:text-primary transition-colors">最新</a>
+                <a href="#" class="hover:text-primary transition-colors">收藏</a>
             </nav>
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative hidden md:block">
+                    <input type="text" placeholder="搜索视频..." class="bg-dark-lighter rounded-full py-2 px-4 pl-10 w-64 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+                <button class="bg-gradient-to-r from-primary to-secondary rounded-full p-2 md:hidden">
+                    <i class="fa fa-search"></i>
+                </button>
+                <button class="bg-dark-lighter hover:bg-dark-light transition-colors rounded-full p-2">
+                    <i class="fa fa-user"></i>
+                </button>
+                <button class="md:hidden bg-dark-lighter hover:bg-dark-light transition-colors rounded-full p-2">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="container hero-content">
-            <h1>Protect Our Planet, Preserve Our Future</h1>
-            <p>Join the global movement to create a sustainable world through conservation, education, and community action.</p>
-            <a href="#get-involved" class="btn">Join Our Network</a>
-        </div>
-    </section>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 pt-28 pb-16">
+        <!-- Hero Section -->
+        <section class="mb-12" data-aos="fade-up">
+            <div class="relative rounded-2xl overflow-hidden h-[50vh] min-h-[300px] max-h-[500px]">
+                <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent z-10"></div>
+                <img src="https://p26-doubao-search-sign.byteimg.com/labis/f08eae3d97c638b09cc017a359cdfb7e~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=cCPTd65Fz2%2FgA9kpAROIu6j33cI%3D" 
+                     alt="Featured Video" 
+                     class="w-full h-full object-cover">
+                <div class="absolute bottom-0 left-0 right-0 p-6 z-20">
+                    <span class="bg-primary/90 text-white text-xs font-medium px-2.5 py-0.5 rounded mb-3 inline-block">精选视频</span>
+                    <h1 class="text-3xl md:text-4xl font-bold mb-2">探索未来科技：VR技术的突破性进展</h1>
+                    <p class="text-gray-300 mb-4 max-w-2xl">深入了解虚拟现实技术的最新发展，以及它如何改变我们的生活和工作方式。</p>
+                    <div class="flex items-center space-x-4">
+                        <button class="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity rounded-full px-6 py-2 flex items-center">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/b11c9d5639164147803f08d0f84708ed~tplv-a9rns2rl98-image.image?rcl=202512272231524F9EAE9E5C16DD9F004D&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1769437944&x-signature=90v40RkjzshPQDy76OAbczWj%2B9U%3D" 
+                                 alt="Play" 
+                                 class="w-5 h-5 mr-2">
+                            立即观看
+                        </button>
+                        <button class="bg-white/10 hover:bg-white/20 transition-colors rounded-full p-2">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                        <button class="bg-white/10 hover:bg-white/20 transition-colors rounded-full p-2">
+                            <i class="fa fa-share-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <!-- About Section -->
-    <section id="about">
-        <div class="container">
-            <div class="section-title">
-                <h2>About Green Network</h2>
-                <p>We are a global community dedicated to environmental protection and sustainable development.</p>
+        <!-- Categories -->
+        <section class="mb-10" data-aos="fade-up" data-aos-delay="100">
+            <div class="flex flex-wrap gap-2">
+                <button class="category-active px-4 py-2 rounded-full text-sm font-medium transition-all" data-category="all">
+                    全部
+                </button>
+                <button class="bg-dark-lighter hover:bg-dark-light px-4 py-2 rounded-full text-sm font-medium transition-all" data-category="tutorial">
+                    教程
+                </button>
+                <button class="bg-dark-lighter hover:bg-dark-light px-4 py-2 rounded-full text-sm font-medium transition-all" data-category="entertainment">
+                    娱乐
+                </button>
+                <button class="bg-dark-lighter hover:bg-dark-light px-4 py-2 rounded-full text-sm font-medium transition-all" data-category="tech">
+                    科技
+                </button>
+                <button class="bg-dark-lighter hover:bg-dark-light px-4 py-2 rounded-full text-sm font-medium transition-all" data-category="lifestyle">
+                    生活方式
+                </button>
+                <button class="bg-dark-lighter hover:bg-dark-light px-4 py-2 rounded-full text-sm font-medium transition-all" data-category="gaming">
+                    游戏
+                </button>
             </div>
-            <div class="about-content">
-                <div class="about-img">
-                    <img src="https://images.unsplash.com/photo-1507591064344-4c6ce005b128?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Team planting trees">
-                </div>
-                <div class="about-text">
-                    <h3>Our Mission</h3>
-                    <p>Green Network is committed to creating a sustainable future by protecting natural ecosystems, promoting renewable energy, and empowering communities to take environmental action.</p>
-                    <p>Founded in 2010, we've grown from a small grassroots organization to an international network with over 50,000 members across 120 countries.</p>
-                    <p>Our approach combines scientific research, community engagement, and policy advocacy to address the most pressing environmental challenges of our time.</p>
-                    <a href="#" class="btn">Learn More</a>
-                </div>
-            </div>
-            <div class="stats">
-                <div class="stat-item">
-                    <i class="fas fa-tree"></i>
-                    <h3 class="counter" data-target="2500000">0</h3>
-                    <p>Trees Planted</p>
-                </div>
-                <div class="stat-item">
-                    <i class="fas fa-users"></i>
-                    <h3 class="counter" data-target="50000">0</h3>
-                    <p>Active Members</p>
-                </div>
-                <div class="stat-item">
-                    <i class="fas fa-globe-americas"></i>
-                    <h3 class="counter" data-target="120">0</h3>
-                    <p>Countries Reached</p>
-                </div>
-                <div class="stat-item">
-                    <i class="fas fa-recycle"></i>
-                    <h3 class="counter" data-target="1500">0</h3>
-                    <p>Cleanup Projects</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Initiatives Section -->
-    <section class="initiatives" id="initiatives">
-        <div class="container">
-            <div class="section-title">
-                <h2>Our Initiatives</h2>
-                <p>Discover the key programs and projects we're implementing to protect our planet.</p>
+        <!-- Videos Grid -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">推荐视频</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="videos-container">
+                <!-- Video cards will be dynamically inserted here -->
             </div>
-            <div class="initiatives-grid">
-                <div class="initiative-card">
-                    <div class="initiative-img">
-                        <img src="https://dialogue.earth/content/uploads/2021/04/lessons-from-the-rush-to-reforest-china-dialogue-2400x1599.jpg" alt="Reforestation">
-                    </div>
-                    <div class="initiative-content">
-                        <h3>Global Reforestation</h3>
-                        <p>Planting millions of trees worldwide to restore ecosystems, combat climate change, and protect biodiversity.</p>
-                        <a href="#" class="btn">Learn More</a>
-                    </div>
-                </div>
-                <div class="initiative-card">
-                    <div class="initiative-img">
-                        <img src="https://images.unsplash.com/photo-1621451537084-482c73073a0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" alt="Ocean Conservation">
-                    </div>
-                    <div class="initiative-content">
-                        <h3>Ocean Conservation</h3>
-                        <p>Protecting marine ecosystems, reducing plastic pollution, and promoting sustainable fishing practices.</p>
-                        <a href="#" class="btn">Learn More</a>
-                    </div>
-                </div>
-                <div class="initiative-card">
-                    <div class="initiative-img">
-                        <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80" alt="Renewable Energy">
-                    </div>
-                    <div class="initiative-content">
-                        <h3>Renewable Energy</h3>
-                        <p>Promoting solar, wind, and other clean energy sources to reduce dependence on fossil fuels.</p>
-                        <a href="#" class="btn">Learn More</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- CTA Section -->
-    <section class="cta" id="get-involved">
-        <div class="container">
-            <h2>Join Our Global Movement</h2>
-            <p>Together, we can create a sustainable future for generations to come. Every action counts, no matter how small.</p>
-            <a href="#" class="btn">Become a Member</a>
-        </div>
-    </section>
+        <!-- Popular Videos -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6">热门视频</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Popular video cards will be dynamically inserted here -->
+            </div>
+        </section>
+    </main>
 
     <!-- Footer -->
-    <footer id="contact">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>Green Network</h3>
-                    <p>We are dedicated to protecting our planet through collaborative action, education, and sustainable solutions.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+    <footer class="bg-dark-light py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-gradient mb-4">VideoShow</h3>
+                    <p class="text-gray-400">发现优质视频内容，探索无限可能。</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">导航</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">首页</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">热门</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">最新</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">收藏</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">分类</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">教程</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">娱乐</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">科技</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">生活方式</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">联系我们</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center"><i class="fa fa-envelope mr-2 text-primary"></i> <a href="mailto:info@videoshow.com" class="text-gray-400 hover:text-primary transition-colors">info@videoshow.com</a></li>
+                        <li class="flex items-center"><i class="fa fa-phone mr-2 text-primary"></i> <span class="text-gray-400">+86 123 4567 8910</span></li>
+                    </ul>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="fa fa-facebook"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="fa fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="fa fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i class="fa fa-youtube-play"></i></a>
                     </div>
                 </div>
-                <div class="footer-column">
-                    <h3>Quick Links</h3>
-                    <ul class="footer-links">
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#about">About Us</a></li>
-                        <li><a href="#initiatives">Initiatives</a></li>
-                        <li><a href="#get-involved">Get Involved</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Our Programs</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Reforestation</a></li>
-                        <li><a href="#">Ocean Cleanup</a></li>
-                        <li><a href="#">Wildlife Protection</a></li>
-                        <li><a href="#">Climate Education</a></li>
-                        <li><a href="#">Sustainable Agriculture</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Contact Us</h3>
-                    <p><i class="fas fa-map-marker-alt"></i> Copper Creek Drive, New York</p>
-                    <p><i class="fas fa-phone"></i> +1 (312) 171-0771</p>
-                    <p><i class="fas fa-envelope"></i> support@greennetwork.org</p>
-                </div>
             </div>
-            <div class="copyright">
-                <p>&copy; 2025 Green Network. All rights reserved.</p>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-500">
+                <p>&copy; 2025 VideoShow. 保留所有权利。</p>
             </div>
         </div>
     </footer>
 
+    <!-- Video Modal -->
+    <div id="video-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" id="modal-backdrop"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl">
+            <div class="relative bg-dark-light rounded-lg overflow-hidden">
+                <button id="close-modal" class="absolute top-4 right-4 bg-dark-lighter hover:bg-dark-light transition-colors rounded-full p-2 z-10">
+                    <i class="fa fa-times"></i>
+                </button>
+                <div class="aspect-w-16 aspect-h-9">
+                    <div id="video-player" class="w-full h-full bg-black flex items-center justify-center">
+                        <!-- Video iframe or other content will be inserted here -->
+                        <div class="text-center">
+                            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
+                            <p>视频加载中...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 id="modal-title" class="text-xl font-bold mb-2">视频标题</h3>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <img src="https://p26-doubao-search-sign.byteimg.com/labis/f08eae3d97c638b09cc017a359cdfb7e~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=cCPTd65Fz2%2FgA9kpAROIu6j33cI%3D" 
+                                 alt="Channel" 
+                                 class="w-10 h-10 rounded-full object-cover mr-3">
+                            <div>
+                                <p class="font-medium">频道名称</p>
+                                <p class="text-sm text-gray-400">100K 订阅者</p>
+                            </div>
+                        </div>
+                        <button class="bg-primary hover:bg-primary/90 transition-colors rounded-full px-4 py-1 text-sm">
+                            订阅
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Mobile Menu Toggle
-        document.querySelector('.mobile-menu').addEventListener('click', function() {
-            document.querySelector('nav ul').classList.toggle('active');
-        });
-
-        // Counter Animation
-        function animateCounters() {
-            const counters = document.querySelectorAll('.counter');
-            const speed = 200; // The lower the slower
+        // Initialize AOS animation library
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-in-out',
+                once: true
+            });
             
-            counters.forEach(counter => {
-                const target = +counter.getAttribute('data-target');
-                const count = +counter.innerText;
-                
-                const inc = target / speed;
-                
-                if(count < target) {
-                    counter.innerText = Math.ceil(count + inc);
-                    setTimeout(animateCounters, 1);
-                } else {
-                    counter.innerText = target;
+            // Sample video data
+            const videos = [
+                {
+                    id: 1,
+                    title: "春节妆容教程好物分享",
+                    thumbnail: "https://p11-doubao-search-sign.byteimg.com/labis/image/aa8eff9734b56f6dd94f58fe0f479fc6~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=91Jg0fqhuxGepOBciLXxOZjCh50%3D",
+                    channel: "美妆达人",
+                    views: "25.6万",
+                    uploaded: "2天前",
+                    duration: "11:44",
+                    category: "tutorial",
+                    featured: true
+                },
+                {
+                    id: 2,
+                    title: "圣诞节美妆干货教程分享",
+                    thumbnail: "https://p11-doubao-search-sign.byteimg.com/labis/1716445d37e5b8454e67b5af0a8c3a6c~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=n5ZJ5hjbTk%2BIVl7FXykDYRncHog%3D",
+                    channel: "美妆达人",
+                    views: "18.3万",
+                    uploaded: "1周前",
+                    duration: "15:20",
+                    category: "tutorial"
+                },
+                {
+                    id: 3,
+                    title: "时尚春季斩男妆教程",
+                    thumbnail: "https://p26-doubao-search-sign.byteimg.com/isp-i18n-media/img/9915dc3c97b4f1cb7b5ca46d44c57175~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=mnSonPeGria0FsRhh5y6083XPgc%3D",
+                    channel: "美妆达人",
+                    views: "32.1万",
+                    uploaded: "3天前",
+                    duration: "08:45",
+                    category: "tutorial",
+                    popular: true
+                },
+                {
+                    id: 4,
+                    title: "颜值进化术！变美奥义",
+                    thumbnail: "https://p11-doubao-search-sign.byteimg.com/labis/f3774d8cfe889de0d02159b9f1799fd8~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=pjH1DPJpzJCxHBoU%2BOH8a1auT%2FE%3D",
+                    channel: "美妆达人",
+                    views: "45.7万",
+                    uploaded: "1个月前",
+                    duration: "20:15",
+                    category: "tutorial",
+                    popular: true
+                },
+                {
+                    id: 5,
+                    title: "情人节单身狗之歌",
+                    thumbnail: "https://p26-doubao-search-sign.byteimg.com/labis/image/c44290858087f1e8d94e16b57b505c82~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=3cbm%2BJxI%2FUuWQ3%2Bm3TwAn66MYcc%3D",
+                    channel: "娱乐搞笑",
+                    views: "128.4万",
+                    uploaded: "1周前",
+                    duration: "03:45",
+                    category: "entertainment",
+                    popular: true
+                },
+                {
+                    id: 6,
+                    title: "娱乐圈：塌房的我被迫开始拍电影",
+                    thumbnail: "https://p26-doubao-search-sign.byteimg.com/labis/image/9b4503341afa3878801ce50db95d2485~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=nIWw0%2F5fOuV8NAS0sam6bjt7H0A%3D",
+                    channel: "娱乐资讯",
+                    views: "96.3万",
+                    uploaded: "2周前",
+                    duration: "12:30",
+                    category: "entertainment"
+                },
+                {
+                    id: 7,
+                    title: "绝世剑神 - 精彩片段",
+                    thumbnail: "https://p26-doubao-search-sign.byteimg.com/labis/image/a23ab004ae3d24e339df267299adb2c5~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=N8noWRXFnmSp2TmIWQnhacjfG%2BM%3D",
+                    channel: "影视剪辑",
+                    views: "78.9万",
+                    uploaded: "5天前",
+                    duration: "05:18",
+                    category: "entertainment",
+                    popular: true
+                },
+                {
+                    id: 8,
+                    title: "Network Security - 网络安全新趋势",
+                    thumbnail: "https://p26-doubao-search-sign.byteimg.com/labis/f08eae3d97c638b09cc017a359cdfb7e~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=cCPTd65Fz2%2FgA9kpAROIu6j33cI%3D",
+                    channel: "科技前沿",
+                    views: "42.1万",
+                    uploaded: "3天前",
+                    duration: "18:42",
+                    category: "tech",
+                    featured: true
+                },
+                {
+                    id: 9,
+                    title: "iPhone14pro真机测评",
+                    thumbnail: "https://p26-doubao-search-sign.byteimg.com/labis/image/473e6b6083ece29903f16a251f6ae192~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=3J61p%2BlG9NOBncMNiUnP2hRDMWY%3D",
+                    channel: "科技评测",
+                    views: "156.7万",
+                    uploaded: "1周前",
+                    duration: "25:30",
+                    category: "tech",
+                    popular: true
+                },
+                {
+                    id: 10,
+                    title: "新机发布会全程回顾",
+                    thumbnail: "https://p26-doubao-search-sign.byteimg.com/labis/image/ffe5cae142e59017627e018f6c77224f~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=AF0kJ1uagpD8jnE7QTWxieYNtJY%3D",
+                    channel: "科技前沿",
+                    views: "89.4万",
+                    uploaded: "2天前",
+                    duration: "45:15",
+                    category: "tech"
+                },
+                {
+                    id: 11,
+                    title: "绿色科技 - 可持续发展",
+                    thumbnail: "https://p26-doubao-search-sign.byteimg.com/labis/41ae7d53271e3954320d4073ab77e987~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=h8iJNN47OObtZi%2F%2Bw6cIvm8Sz5s%3D",
+                    channel: "科技前沿",
+                    views: "32.8万",
+                    uploaded: "1个月前",
+                    duration: "14:22",
+                    category: "tech"
+                },
+                {
+                    id: 12,
+                    title: "我宠的，小奶萌[娱乐圈]",
+                    thumbnail: "https://p26-doubao-search-sign.byteimg.com/labis/image/1bdae892895995ae3d097690b9fec35c~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1782397921&x-signature=aVG%2BvPmVA%2FJxEnikFCrvNeszOpM%3D",
+                    channel: "娱乐资讯",
+                    views: "67.2万",
+                    uploaded: "2周前",
+                    duration: "08:45",
+                    category: "entertainment"
                 }
-            });
-        }
-
-        // Initialize counters when page loads
-        window.addEventListener('load', animateCounters);
-
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if(targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if(targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
+            ];
+            
+            // Function to create video card HTML
+            function createVideoCard(video) {
+                return `
+                    <div class="video-card relative rounded-xl overflow-hidden card-hover group" data-category="${video.category}" data-aos="fade-up">
+                        <img src="${video.thumbnail}" alt="${video.title}" class="w-full aspect-video object-cover">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            <button class="play-button bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors rounded-full p-3" data-id="${video.id}">
+                                <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/b11c9d5639164147803f08d0f84708ed~tplv-a9rns2rl98-image.image?rcl=202512272231524F9EAE9E5C16DD9F004D&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1769437944&x-signature=90v40RkjzshPQDy76OAbczWj%2B9U%3D" 
+                                     alt="Play" 
+                                     class="w-8 h-8">
+                            </button>
+                        </div>
+                        <span class="video-duration absolute bottom-2 right-2 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded">
+                            ${video.duration}
+                        </span>
+                        <div class="p-3 video-info">
+                            <h3 class="font-semibold line-clamp-2 group-hover:text-primary transition-colors">${video.title}</h3>
+                            <div class="flex items-center mt-2 text-sm text-gray-400">
+                                <span>${video.channel}</span>
+                                <span class="mx-1">•</span>
+                                <span>${video.views} 次观看</span>
+                                <span class="mx-1">•</span>
+                                <span>${video.uploaded}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Render videos
+            const videosContainer = document.getElementById('videos-container');
+            const popularContainer = document.querySelector('.popular-videos .grid');
+            
+            // Filter and render recommended videos (excluding featured and popular)
+            const recommendedVideos = videos.filter(video => !video.featured && !video.popular);
+            videosContainer.innerHTML = recommendedVideos.map(createVideoCard).join('');
+            
+            // Render popular videos
+            const popularVideos = videos.filter(video => video.popular);
+            const popularSection = document.querySelector('.popular-videos .grid');
+            popularSection.innerHTML = popularVideos.map(createVideoCard).join('');
+            
+            // Category filter functionality
+            const categoryButtons = document.querySelectorAll('[data-category]');
+            
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    categoryButtons.forEach(btn => {
+                        btn.classList.remove('category-active');
+                        btn.classList.add('bg-dark-lighter', 'hover:bg-dark-light');
                     });
+                    this.classList.add('category-active');
+                    this.classList.remove('bg-dark-lighter', 'hover:bg-dark-light');
                     
-                    document.querySelector('nav ul').classList.remove('active');
+                    const category = this.getAttribute('data-category');
+                    const videoCards = document.querySelectorAll('.video-card');
+                    
+                    videoCards.forEach(card => {
+                        if (category === 'all' || card.getAttribute('data-category') === category) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Video modal functionality
+            const videoModal = document.getElementById('video-modal');
+            const modalBackdrop = document.getElementById('modal-backdrop');
+            const closeModal = document.getElementById('close-modal');
+            const videoPlayer = document.getElementById('video-player');
+            const modalTitle = document.getElementById('modal-title');
+            
+            // Open modal when play button is clicked
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.play-button')) {
+                    const button = e.target.closest('.play-button');
+                    const videoId = parseInt(button.getAttribute('data-id'));
+                    const video = videos.find(v => v.id === videoId);
+                    
+                    if (video) {
+                        // Set modal content
+                        modalTitle.textContent = video.title;
+                        
+                        // Simulate video loading (replace with actual video player in production)
+                        setTimeout(() => {
+                            videoPlayer.innerHTML = `
+                                <div class="relative w-full h-full">
+                                    <img src="${video.thumbnail}" alt="${video.title}" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="text-center">
+                                            <p class="text-xl font-semibold mb-2">视频预览</p>
+                                            <p class="text-gray-400">在实际应用中，这里会嵌入真实的视频播放器</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }, 1000);
+                        
+                        // Show modal
+                        videoModal.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden'; // Prevent scrolling
+                    }
                 }
             });
+            
+            // Close modal functions
+            function hideModal() {
+                videoModal.classList.add('hidden');
+                document.body.style.overflow = ''; // Re-enable scrolling
+                // Reset video player content
+                videoPlayer.innerHTML = `
+                    <div class="text-center">
+                        <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
+                        <p>视频加载中...</p>
+                    </div>
+                `;
+            }
+            
+            closeModal.addEventListener('click', hideModal);
+            modalBackdrop.addEventListener('click', hideModal);
+            
+            // Search functionality (basic implementation)
+            const searchInput = document.querySelector('input[placeholder="搜索视频..."]');
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function(e) {
+                    if (e.key === 'Enter') {
+                        const searchTerm = this.value.toLowerCase().trim();
+                        if (searchTerm) {
+                            alert(`搜索功能：正在搜索"${searchTerm}"`);
+                            // In a real application, you would filter videos based on the search term
+                        }
+                    }
+                });
+            }
         });
     </script>
 </body>
-
 </html>
